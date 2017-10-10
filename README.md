@@ -1,2 +1,3 @@
-# jiminy-modeler
-a framework for a spark based model creation service
+# Jiminy Modeler
+
+This is the model service for the Jiminy project.
