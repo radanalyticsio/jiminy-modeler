@@ -27,11 +27,15 @@ cursor.execute("SELECT * FROM ratingsdata")
 ratings = cursor.fetchall()
 ratingsRDD = sc.parallelize(ratings)
 #print type(testings)
-#print testings.take(4)
+print ratingsRDD.take(1)
 #print testings.count()
 ### TESTING THAT IT KNOWS ABOUT JUMANJI ###
-jumanji_ratings = ratingsRDD.filter(lambda x: x[0]==2).map(lambda x: x[2])
-sns.distplot(jumanji_ratings.collect(), bins=6 )
+ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+print type(ratingsRDD)
+print ratingsRDD.take(1)
+#jumanji_ratings = ratingsRDD.filter(lambda x: x[0]==2).map(lambda x: x[2])
+#sns.distplot(jumanji_ratings.collect(), bins=6 )
+
 
 print "done so why are we waiting"
 ########## TRAINING A MODEL ###############
