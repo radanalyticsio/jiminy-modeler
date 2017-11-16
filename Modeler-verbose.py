@@ -5,6 +5,7 @@ from pyspark.sql.functions import mean, desc
 from pyspark import SparkContext, SparkConf
 import seaborn as sns
 import matplotlib.pyplot as plt
+from pyspark.mllib.recommendation import ALS
 ####
 conf = SparkConf().setAppName("recommender")
 conf = (conf.setMaster('local[*]')
@@ -31,4 +32,18 @@ ratingsRDD = sc.parallelize(ratings)
 ### TESTING THAT IT KNOWS ABOUT JUMANJI ###
 jumanji_ratings = ratingsRDD.filter(lambda x: x[0]==2).map(lambda x: x[2])
 sns.distplot(jumanji_ratings.collect(), bins=6 )
-plt.show()
+
+print "done so why are we waiting"
+########## TRAINING A MODEL ###############
+rank = 5
+iterations = 1
+seed = 42
+def split_sets(ratings, proportions):
+    split = ratings.randomSplit(proportions)
+    return {'training': split[0], 'validation': split[1], 'test': split[2]}
+print "Defined split"
+sets = split_sets(ratingsRDD, [0.63212056, 0.1839397, 0.1839397])
+print "got dem sets"
+print "have set the tuning params and split the data"
+model = ALS.train(sets['training'], rank, seed=seed, iterations=iterations)
+print "has run the model"
