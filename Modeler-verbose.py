@@ -6,6 +6,7 @@ from pyspark import SparkContext, SparkConf
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pyspark.mllib.recommendation import ALS
+import math
 ####
 conf = SparkConf().setAppName("recommender")
 conf = (conf.setMaster('local[*]')
@@ -51,3 +52,15 @@ print "got dem sets"
 print "have set the tuning params and split the data"
 model = ALS.train(sets['training'], rank, seed=seed, iterations=iterations)
 print "has run the model"
+
+def group_ratings(x):
+    return ((int(x[0]), int(x[1])), float(x[2]))
+
+def rmse(model, validation_set):
+    predictions = model.predictAll(validation_set.map(lambda x: (x[0], x[1])))
+    predictions_rating = predictions.map(group_ratings)
+    validation_rating = validation_set.map(group_ratings)
+    joined = validation_rating.join(predictions_rating)
+    return math.sqrt(joined.map(lambda x: (x[1][0] - x[1][1])**2).mean())
+
+print rmse(model, sets['validation'])
