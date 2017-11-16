@@ -3,6 +3,8 @@ import pyspark
 from pyspark.sql import SparkSession, SQLContext, DataFrameReader
 from pyspark.sql.functions import mean, desc
 from pyspark import SparkContext, SparkConf
+import seaborn as sns
+import matplotlib.pyplot as plt
 ####
 conf = SparkConf().setAppName("recommender")
 conf = (conf.setMaster('local[*]')
@@ -26,3 +28,7 @@ ratingsRDD = sc.parallelize(ratings)
 #print type(testings)
 #print testings.take(4)
 #print testings.count()
+### TESTING THAT IT KNOWS ABOUT JUMANJI ###
+jumanji_ratings = ratingsRDD.filter(lambda x: x[0]==2).map(lambda x: x[2])
+sns.distplot(jumanji_ratings.collect(), bins=6 )
+plt.show()
