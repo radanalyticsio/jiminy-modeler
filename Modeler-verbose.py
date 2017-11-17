@@ -7,6 +7,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from pyspark.mllib.recommendation import ALS
 import math
+import psutil
+import numpy as np
+import modeller
 ####
 conf = SparkConf().setAppName("recommender")
 conf = (conf.setMaster('local[*]')
@@ -50,8 +53,8 @@ print "Defined split"
 sets = split_sets(ratingsRDD, [0.63212056, 0.1839397, 0.1839397])
 print "got dem sets"
 print "have set the tuning params and split the data"
-model = ALS.train(sets['training'], rank, seed=seed, iterations=iterations)
-print "has run the model"
+#model = ALS.train(sets['training'], rank, seed=seed, iterations=iterations)
+#print "has run the model"
 
 def group_ratings(x):
     return ((int(x[0]), int(x[1])), float(x[2]))
@@ -63,4 +66,17 @@ def rmse(model, validation_set):
     joined = validation_rating.join(predictions_rating)
     return math.sqrt(joined.map(lambda x: (x[1][0] - x[1][1])**2).mean())
 
-print rmse(model, sets['validation'])
+def train(training_set, rank = 10, iterations = 10, seed = 42):
+    return ALS.train(ratings=training_set, rank=rank, seed=seed, iterations=iterations)
+
+#ranks = np.arange(1, 10)
+#rmses = [rmse(train(sets['training'], rank=i, iterations=7, seed=42), sets['validation']) for i in ranks]
+#print rmses
+######### Initial model train. Use the split sets.
+######### Train the modeller ###############
+### Initial parameter choices for ranks and lambdas.
+estimator = modeller.Estimator(ratings)
+
+parameters = estimator.run(ranks=[2, 4, 6, 8, 10],
+                           lambdas=[0.01, 0.05, 0.09, 0.14],
+                           iterations=[5])
