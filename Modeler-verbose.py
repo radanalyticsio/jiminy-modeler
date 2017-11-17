@@ -75,8 +75,8 @@ def train(training_set, rank = 10, iterations = 10, seed = 42):
 ######### Initial model train. Use the split sets.
 ######### Train the modeller ###############
 ### Initial parameter choices for ranks and lambdas.
-estimator = modeller.Estimator(ratings)
+estimator = modeller.Estimator(ratingsRDD)
 
-parameters = estimator.run(ranks=[2, 4, 6, 8, 10],
-                           lambdas=[0.01, 0.05, 0.09, 0.14],
-                           iterations=[5])
+#parameters = estimator.run(ranks=[2, 4, 6, 8, 10],
+#                           lambdas=[0.01, 0.05, 0.09, 0.14],
+#                           iterations=[5])
