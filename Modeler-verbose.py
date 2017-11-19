@@ -1,7 +1,6 @@
 import psycopg2
 import pyspark
 from pyspark.sql import SparkSession, SQLContext, DataFrameReader
-from pyspark.sql.functions import mean, desc
 from pyspark import SparkContext, SparkConf
 import seaborn as sns
 import matplotlib.pyplot as plt
