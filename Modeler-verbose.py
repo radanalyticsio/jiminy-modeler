@@ -29,18 +29,13 @@ except:
 
 cursor=con.cursor()
 
-#cursor.execute("SELECT * FROM ratingsdata")
-#print "done cursor execute"
 ratings = cursor.fetchall()
+
+### Do I need to close the cursor?
+
+#creates the RDD:
 ratingsRDD = sc.parallelize(ratings)
-#print type(testings)
-print ratingsRDD.take(1)
-#print testings.count()
-### TESTING THAT IT KNOWS ABOUT JUMANJI ###
 ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
-print type(ratingsRDD)
-print ratingsRDD.take(1)
-print "done so why are we waiting"
 ########## TRAINING A MODEL ###############
 rank = 5
 iterations = 1
