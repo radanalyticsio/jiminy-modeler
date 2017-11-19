@@ -1,15 +1,14 @@
+### main application file for jiminy-modeller ###
 import psycopg2
 import pyspark
-from pyspark.sql import SparkSession, SQLContext, DataFrameReader
+from pyspark.sql import SQLContext
 from pyspark import SparkContext, SparkConf
-import seaborn as sns
-import matplotlib.pyplot as plt
-from pyspark.mllib.recommendation import ALS
 import math
-import psutil
-import numpy as np
+
 import modeller
 ####
+
+######### put this into some kind of nice method
 conf = SparkConf().setAppName("recommender")
 conf = (conf.setMaster('local[*]')
         .set('spark.executor.memory', '4G')
@@ -24,8 +23,13 @@ try:
 except:
     print "Cannot connect to the database"
 
+
+######################
+
+
 cursor=con.cursor()
-cursor.execute("SELECT * FROM ratingsdata")
+
+#cursor.execute("SELECT * FROM ratingsdata")
 #print "done cursor execute"
 ratings = cursor.fetchall()
 ratingsRDD = sc.parallelize(ratings)
@@ -36,10 +40,6 @@ print ratingsRDD.take(1)
 ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 print type(ratingsRDD)
 print ratingsRDD.take(1)
-#jumanji_ratings = ratingsRDD.filter(lambda x: x[0]==2).map(lambda x: x[2])
-#sns.distplot(jumanji_ratings.collect(), bins=6 )
-
-
 print "done so why are we waiting"
 ########## TRAINING A MODEL ###############
 rank = 5
@@ -68,9 +68,6 @@ def rmse(model, validation_set):
 def train(training_set, rank = 10, iterations = 10, seed = 42):
     return ALS.train(ratings=training_set, rank=rank, seed=seed, iterations=iterations)
 
-#ranks = np.arange(1, 10)
-#rmses = [rmse(train(sets['training'], rank=i, iterations=7, seed=42), sets['validation']) for i in ranks]
-#print rmses
 ######### Initial model train. Use the split sets.
 ######### Train the modeller ###############
 ### Initial parameter choices for ranks and lambdas.
