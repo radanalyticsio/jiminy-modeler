@@ -36,7 +36,12 @@ class Estimator:
     def run(self, ranks, lambdas, iterations):
         # create combinations of parameters to test
         rmses = []
-
+        combos=[]
+        print len(ranks)
+        print len(lambdas)
+        print len(iterations)
+        sizings = [len(ranks), len(lambdas), len(iterations)]
+        print sizings
         for parameters in itertools.product(ranks, lambdas, iterations):
             rank, lambda_, iteration = parameters
 
@@ -51,12 +56,18 @@ class Estimator:
             print "RMSE = %f (took %f seconds)" % (rmse, elapsed_time)
 
             rmses.append(rmse)
-
+            combos.append(parameters)
+            print combos
+        print rmses
         maximum = min(enumerate(rmses), key=itemgetter(1))[0]
+        print enumerate(rmses)
+        print min(enumerate(rmses), key=itemgetter(1))
+        print maximum
+        optimal = combos[maximum]
         return {
-            'rank': ranks[maximum],
-            'lambda': lambdas[maximum],
-            'iteration': iterations[maximum]
+            'rank': optimal[0],
+            'lambda': optimal[1],
+            'iteration': optimal[2]
         }
 
 
@@ -74,7 +85,3 @@ class Trainer:
                          seed=self.seed,
                          lambda_=self.lambda_,
                          iterations=self.iterations)
-
-
-def store(sc, model, path):
-    model.save(sc, path)
