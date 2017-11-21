@@ -1,19 +1,20 @@
-#"""main app file for modeler"""
+#!/usr/bin/env python
+"""main app file for modeler"""
+
+
+import psycopg2
+import pyspark
+from pyspark.sql import SQLContext
+from pyspark import SparkContext, SparkConf
+import math
+import modeller
+import storage
+
 def main():
     # just leaving these here for future reference (elmiko)
     # from pyspark import sql as pysql
     # spark = pysql.SparkSession.builder.appName("JiminyMod").getOrCreate()
     # sc = spark.sparkContext
-
-    import psycopg2
-    import pyspark
-    from pyspark.sql import SQLContext
-    from pyspark import SparkContext, SparkConf
-    import math
-
-    import modeller
-    import storage
-
     ### set up the spark context.
     conf = SparkConf().setAppName("recommender")
     conf = (conf.setMaster('local[*]')
@@ -27,14 +28,12 @@ def main():
         con = psycopg2.connect(dbname='movielens', user='postgres', host='localhost', port='5432', password='password')
     #    print "Connected to database"
     except:
-        print "Cannot connect to the database"
+        sys.exit(1)
      # fetch the data from the db
     cursor=con.cursor()
     cursor.execute("SELECT * FROM ratingsdata")
 
     ratings = cursor.fetchall()
-
-
     #creates the RDD:
     ratingsRDD = sc.parallelize(ratings)
     #currently removing the final column, which contains the time stamps.
@@ -63,8 +62,6 @@ def main():
         # 2. if yes, create a new model. if no, continue looping
         #    (perhaps with a delay)
         # 3. store new model
-    #    pass
-
 
 if __name__ == '__main__':
     main()

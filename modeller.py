@@ -9,7 +9,9 @@ import numpy as np
 class Estimator:
     def __init__(self, data):
         self._data = data
-        self._sets = self._split([0.63212056, 0.1839397, 0.1839397])
+        #std bootstrap proportions for the training, validation and testing
+        self._sets = self._split([0.6, 0.2, 0.2])
+
 
     def _split(self, proportions):
         split = self._data.randomSplit(proportions)
