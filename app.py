@@ -3,10 +3,8 @@
 
 
 import psycopg2
-import pyspark
 from pyspark.sql import SQLContext
 from pyspark import SparkContext, SparkConf
-import math
 import modeller
 import storage
 import sys
