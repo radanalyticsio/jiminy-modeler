@@ -38,7 +38,7 @@ def main():
 
     # fetch the data from the db
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM ratingsdata")
+    cursor.execute("SELECT * FROM ratings")
 
     ratings = cursor.fetchall()
 
