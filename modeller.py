@@ -39,11 +39,8 @@ class Estimator:
         # create combinations of parameters to test
         rmses = []
         combos=[]
-        print len(ranks)
-        print len(lambdas)
-        print len(iterations)
         sizings = [len(ranks), len(lambdas), len(iterations)]
-        print sizings
+
         for parameters in itertools.product(ranks, lambdas, iterations):
             rank, lambda_, iteration = parameters
 
