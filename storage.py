@@ -28,22 +28,32 @@ class MongoDBModelWriter(ModelWriter):
     """
     Model store writer to a MongoDB backend
     """
+
     def __init__(self, host='localhost', port=27017):
         super(MongoDBModelWriter, self).__init__()
         self._client = MongoClient(host=host, port=port)
         self._db = self._client.models
 
     def write(self, model, version):
-        u = model.userFeatures().collect()
-        userFeatures = [{'id': feature[0], 'features': list(feature[1])} for feature in u]
-
-        p = model.productFeatures().collect()
-        productFeatures = [{'id': feature[0], 'features': list(feature[1])} for feature in p]
 
         data = {'id': version,
                 'rank': model.rank,
-                'userFeatures': userFeatures,
-                'productFeatures': productFeatures,
                 'created': datetime.datetime.utcnow()}
 
         self._db.models.insert_one(data)
+
+        u = model.userFeatures().collect()
+
+        for feature in u:
+            self._db.userFactors.insert_one({
+                'model_id': version,
+                'id': feature[0],
+                'features': list(feature[1])})
+
+        p = model.productFeatures().collect()
+
+        for feature in p:
+            self._db.productFactors.insert_one({
+                'model_id': version,
+                'id': feature[0],
+                'features': list(feature[1])})
