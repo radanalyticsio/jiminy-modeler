@@ -44,6 +44,7 @@ def main():
 
     # creates the RDD:
     ratingsRDD = sc.parallelize(ratings)
+    ratings_length=cursor.rowcount
 
     # currently removing the final column, which contains the time stamps.
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
@@ -61,10 +62,11 @@ def main():
                              lambda_=parameters['lambda'],
                              seed=42).train()
     # writes the model
+    model_version=1
     writer = storage.MongoDBModelWriter(host='localhost', port=27017)
     writer.write(model=model, version=1)
 
-    # while True:
+    while True:
     # this loop should be at the heart of this application, it will
     # continually loop until killed by the orchestration engine.
     # in this loop it should generally do the following:
@@ -72,6 +74,30 @@ def main():
     # 2. if yes, create a new model. if no, continue looping
     #    (perhaps with a delay)
     # 3. store new model
+
+        #Check to see if new model should be created
+        cursor.execute("SELECT * FROM ratings_data_small")
+        current_ratings_length = cursor.rowcount
+
+        if current_ratings_length != ratings_length:
+            ratings_length = current_ratings_length
+            ratings = cursor.fetchall()
+
+            #create the RDD:
+            ratingsRDD = sc.parallelize(ratings)
+            ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+
+            model_version += 1
+            print model_version
+            model = modeller.Trainer(data=ratingsRDD,
+                                rank=parameters['rank'],
+                                iterations=parameters['iteration'],
+                                lambda_ = parameters['lambda'],
+                                seed=42).train()
+
+        else:
+        ##sleep for 2 minutes
+            time.sleep(120)
 
 
 if __name__ == '__main__':
