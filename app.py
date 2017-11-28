@@ -95,6 +95,7 @@ def main():
                                 iterations=parameters['iteration'],
                                 lambda_ = parameters['lambda'],
                                 seed=42).train()
+            writer.write(model=model, version=model_version)
 
         else:
         ##sleep for 2 minutes
