@@ -32,7 +32,7 @@ def main():
     # Set up SQL Context
 
     try:
-        con = psycopg2.connect(dbname='movielens', user='postgres', host='localhost', port='5432', password='password')
+        con = psycopg2.connect(dbname='postgres', user='postgres', host='localhost', port='5432', password='password')
     except:
         logger.error("Could not connect to data store")
         sys.exit(1)
