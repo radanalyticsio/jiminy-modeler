@@ -3,7 +3,8 @@
 
 import psycopg2
 import time
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkConf
+from pyspark import sql as pysql
 import modeller
 import storage
 import sys
@@ -53,12 +54,15 @@ def main(arguments):
 
     logger.debug("Connecting to Spark")
 
-    conf = SparkConf().setAppName("recommender")
+    conf = SparkConf().setAppName("JiminyModeler")
     conf = (conf.setMaster('local[*]')
             .set('spark.executor.memory', '4G')
             .set('spark.driver.memory', '45G')
             .set('spark.driver.maxResultSize', '10G'))
-    sc = SparkContext(conf=conf)
+
+    # get the spark context
+    spark = pysql.SparkSession.builder.config(conf=conf).getOrCreate()
+    sc = spark.sparkContext
 
     # Set up SQL Context
     try:
