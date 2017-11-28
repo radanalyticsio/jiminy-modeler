@@ -2,6 +2,7 @@
 """main app file for modeler"""
 
 import psycopg2
+import time
 from pyspark import SparkContext, SparkConf
 import modeller
 import storage
