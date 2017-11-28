@@ -76,7 +76,7 @@ def main():
     # 3. store new model
 
         #Check to see if new model should be created
-        cursor.execute("SELECT * FROM ratings_data_small")
+        cursor.execute("SELECT * FROM ratings")
         current_ratings_length = cursor.rowcount
 
         if current_ratings_length != ratings_length:
