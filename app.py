@@ -85,10 +85,17 @@ def main(arguments):
 
     estimator = modeller.Estimator(ratingsRDD)
 
-    # basic parameter selection
-    parameters = estimator.run(ranks=[2, 4, 6, 8],
-                               lambdas=[0.01, 0.05, 0.09, 0.13],
-                               iterations=[2])
+    if get_arg('DISABLE_FAST_TRAIN', args.slowtrain) is True:
+        # basic parameter selection
+        logger.info('Using slow training method')
+        parameters = estimator.run(ranks=[2, 4, 6, 8],
+                                   lambdas=[0.01, 0.05, 0.09, 0.13],
+                                   iterations=[2])
+    else:
+        # override basic parameters for faster testing
+        logger.info('Using fast training method')
+        parameters = { 'rank': 6, 'lambda': 0.09, 'iteration': 2 }
+
     # trains the model
     model = modeller.Trainer(data=ratingsRDD,
                              rank=parameters['rank'],
@@ -160,5 +167,9 @@ if __name__ == '__main__':
         '--mongoURI', default='mongodb://localhost:27017',
         help='the mongodb URI (default:mongodb://localhost:27017).'
         'env variable:MONGO_URI')
+    parser.add_argument(
+        '--disable-fast-train', dest='slowtrain', action='store_true',
+        help='disable the faster training method, warning this may slow '
+        'down quite a bit for the first run.')
     args=parse_args(parser)
     main(arguments=args)
