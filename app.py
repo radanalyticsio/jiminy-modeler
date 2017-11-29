@@ -40,7 +40,7 @@ def parse_args(parser):
      return args
 
 
-def main():
+def main(arguments):
     logger = logging.getLogger("jiminy-modeler")
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -68,14 +68,13 @@ def main():
     # fetch the data from the db
     cursor = con.cursor()
     cursor.execute("SELECT * FROM ratings")
-    print "connected"
     ratings = cursor.fetchall()
+    logger.info("Fetched data from table")
     # creates the RDD:
     ratingsRDD = sc.parallelize(ratings)
     ratings_length=cursor.rowcount
-    print ratings_length
 
-    # currently removing the final column, which contains the time stamps.
+    #removing the final column, which contains the time stamps.
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 
     estimator = modeller.Estimator(ratingsRDD)
@@ -152,4 +151,4 @@ if __name__ == '__main__':
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
     args=parse_args(parser)
-    main()
+    main(arguments=args)
