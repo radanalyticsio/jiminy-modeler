@@ -14,7 +14,7 @@ import os.path
 import argparse
 
 def get_arg(env, default):
-    return os.getenv(env) if os.getenv(env) is not '' else default
+    return os.getenv(env) if os.getenv(env, '') is not '' else default
 
 def make_connection(host='127.0.0.1', port=5432, user='postgres',
                     password='postgres', dbname='postgres'):
