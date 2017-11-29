@@ -54,8 +54,7 @@ def main(arguments):
 
     logger.debug("Connecting to Spark")
 
-    conf = SparkConf().setAppName("JiminyModeler")
-    conf = (conf.setMaster('local[*]')
+    conf = (SparkConf().setAppName("JiminyModeler")
             .set('spark.executor.memory', '4G')
             .set('spark.driver.memory', '45G')
             .set('spark.driver.maxResultSize', '10G'))
