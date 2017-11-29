@@ -163,7 +163,7 @@ if __name__ == '__main__':
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
     parser.add_argument(
-        '--mongo-uri', default='mongodb://localhost:27017',
+        '--mongo-uri', default='mongodb://localhost:27017', dest='mongoURI',
         help='the mongodb URI (default:mongodb://localhost:27017).'
         'env variable:MONGO_URI')
     parser.add_argument(
