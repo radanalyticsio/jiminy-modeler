@@ -34,11 +34,11 @@ def build_connection(args):
 
 def parse_args(parser):
      args = parser.parse_args()
-     args.host = os.getenv('DB_HOST', args.host)
-     args.port = os.getenv('DB_PORT', args.port)
-     args.user = os.getenv('DB_USER', args.user)
-     args.password = os.getenv('DB_PASSWORD', args.password)
-     args.dbname = os.getenv('DB_DBNAME', args.dbname)
+     args.host = get_arg('DB_HOST', args.host)
+     args.port = get_arg('DB_PORT', args.port)
+     args.user = get_arg('DB_USER', args.user)
+     args.password = get_arg('DB_PASSWORD', args.password)
+     args.dbname = get_arg('DB_DBNAME', args.dbname)
      return args
 
 
