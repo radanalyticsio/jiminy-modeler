@@ -13,6 +13,8 @@ import os
 import os.path
 import argparse
 
+def get_arg(env, default):
+    return os.getenv(env) if os.getenv(env) is not '' else default
 
 def make_connection(host='127.0.0.1', port=5432, user='postgres',
                     password='postgres', dbname='postgres'):
@@ -60,7 +62,7 @@ def main(arguments):
 
     # Set up SQL Context
     try:
-        con = build_connection(args)
+        con = build_connection(arguments)
     except:
         logger.error("Could not connect to data store")
         sys.exit(1)
@@ -116,7 +118,7 @@ def main(arguments):
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 
             model_version += 1
-            logger.info("model version"=model_version)
+            logger.info("model version={}".format(model_version))
             model = modeller.Trainer(data=ratingsRDD,
                                 rank=parameters['rank'],
                                 iterations=parameters['iteration'],
