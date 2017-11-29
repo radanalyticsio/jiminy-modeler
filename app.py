@@ -40,6 +40,7 @@ def parse_args(parser):
      args.user = get_arg('DB_USER', args.user)
      args.password = get_arg('DB_PASSWORD', args.password)
      args.dbname = get_arg('DB_DBNAME', args.dbname)
+     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
      return args
 
 
@@ -96,7 +97,7 @@ def main(arguments):
                              seed=42).train()
     # writes the model
     model_version=1
-    writer = storage.MongoDBModelWriter(host='localhost', port=27017)
+    writer = storage.MongoDBModelWriter(sc=sc, uri=arguments.mongoURI)
     writer.write(model=model, version=1)
 
     while True:
@@ -155,5 +156,9 @@ if __name__ == '__main__':
         '--password', default='postgres',
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
+    parser.add_argument(
+        '--mongoURI', default='mongodb://localhost:27017',
+        help='the mongodb URI (default:mongodb://localhost:27017).'
+        'env variable:MONGO_URI')
     args=parse_args(parser)
     main(arguments=args)
