@@ -145,10 +145,9 @@ def main(arguments):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'load data from postgresql db')
     parser.add_argument(
-    '--host', default='127.0.0.1',
-    help='the postgresql host address (default:127.0.0.1).'
-    'env variable: DB_HOST'
-    )
+        '--host', default='127.0.0.1',
+        help='the postgresql host address (default:127.0.0.1).'
+        'env variable: DB_HOST')
     parser.add_argument(
         '--dbname', default='postgres',
         help='the database name to load with data. env variable: DB_DBNAME')
@@ -164,7 +163,7 @@ if __name__ == '__main__':
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
     parser.add_argument(
-        '--mongoURI', default='mongodb://localhost:27017',
+        '--mongo-uri', default='mongodb://localhost:27017',
         help='the mongodb URI (default:mongodb://localhost:27017).'
         'env variable:MONGO_URI')
     parser.add_argument(
