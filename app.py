@@ -116,7 +116,7 @@ def main(arguments):
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 
             model_version += 1
-            print model_version
+            logger.info("model version"=model_version)
             model = modeller.Trainer(data=ratingsRDD,
                                 rank=parameters['rank'],
                                 iterations=parameters['iteration'],
