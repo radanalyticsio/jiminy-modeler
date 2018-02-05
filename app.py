@@ -8,7 +8,7 @@ from pyspark import sql as pysql
 import modeller
 import storage
 import sys
-import logging
+from logger import get_logger
 
 import os
 import os.path
@@ -45,12 +45,7 @@ def parse_args(parser):
 
 
 def main(arguments):
-    logger = logging.getLogger("jiminy-modeler")
-    ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
+    logger = get_logger()
     # set up the spark context.
 
     logger.debug("Connecting to Spark")
