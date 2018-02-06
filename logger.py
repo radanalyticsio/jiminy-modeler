@@ -10,4 +10,4 @@ def get_logger():
         logger.addHandler(ch)
         logger.setLevel(logging.DEBUG)
 
-        return logger
+    return logger
