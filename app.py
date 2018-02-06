@@ -114,6 +114,7 @@ def main(arguments):
         #Check to see if new model should be created
         cursor.execute("SELECT * FROM ratings")
         current_ratings_length = cursor.rowcount
+        logger.info("current ratings length = {}".format(current_ratings_length))
 
         if current_ratings_length != ratings_length:
             ratings_length = current_ratings_length
@@ -134,6 +135,7 @@ def main(arguments):
 
         else:
         ##sleep for 2 minutes
+            logger.info("sleeping for 120 seconds")
             time.sleep(120)
 
 
