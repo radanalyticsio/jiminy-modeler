@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 """main app file for modeler"""
 
-import psycopg2
-import time
-from pyspark import SparkConf
-from pyspark import sql as pysql
-import modeller
-import storage
-import sys
-from logger import get_logger
-
 import os
+import sys
+import time
 import os.path
 import argparse
+
+import psycopg2
+from pyspark import SparkConf
+from pyspark import sql as pysql
+
+import modeller
+import storage
+from logger import get_logger
+
 
 def get_arg(env, default):
     return os.getenv(env) if os.getenv(env, '') is not '' else default
