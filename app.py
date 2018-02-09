@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 """Main app file for modeler."""
 
+import argparse
 import os
+import os.path
 import sys
 import time
-import os.path
-import argparse
 
 import psycopg2
 import pyspark
 
+import logger
 import modeller
 import storage
-import logger
 
 
 def get_arg(env, default):
