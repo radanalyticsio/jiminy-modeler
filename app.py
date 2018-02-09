@@ -8,12 +8,11 @@ import os.path
 import argparse
 
 import psycopg2
-from pyspark import SparkConf
-from pyspark import sql as pysql
+import pyspark
 
 import modeller
 import storage
-from logger import get_logger
+import logger
 
 
 def get_arg(env, default):
@@ -47,18 +46,18 @@ def parse_args(parser):
 
 
 def main(arguments):
-    logger = get_logger()
+    logger = logger.get_logger()
     # set up the spark context.
 
     logger.debug("Connecting to Spark")
 
-    conf = (SparkConf().setAppName("JiminyModeler")
+    conf = (pyspark.SparkConf().setAppName("JiminyModeler")
             .set('spark.executor.memory', '4G')
             .set('spark.driver.memory', '45G')
             .set('spark.driver.maxResultSize', '10G'))
 
     # get the spark context
-    spark = pysql.SparkSession.builder.config(conf=conf).getOrCreate()
+    spark = pyspark.sql.SparkSession.builder.config(conf=conf).getOrCreate()
     sc = spark.sparkContext
 
     # Set up SQL Context
