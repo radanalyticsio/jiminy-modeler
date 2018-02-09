@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""main app file for modeler"""
+"""Main app file for modeler."""
 
 import os
 import sys
@@ -15,16 +15,18 @@ import storage
 import logger
 
 def get_arg(env, default):
+    """Extract command line args, else use defaults if none given."""
     return os.getenv(env) if os.getenv(env, '') is not '' else default
 
 def make_connection(host='127.0.0.1', port=5432, user='postgres',
                     password='postgres', dbname='postgres'):
+    """Connect to a postgresql db."""
     return psycopg2.connect(host=host, port=port, user=user,
                             password=password, dbname=dbname)
 
 
 def build_connection(args):
-    """make the db connection with an args object"""
+    """Make the db connection with an args object."""
     conn = make_connection(host=args.host,
                            port=args.port,
                            user=args.user,
@@ -34,19 +36,21 @@ def build_connection(args):
 
 
 def parse_args(parser):
-     args = parser.parse_args()
-     args.host = get_arg('DB_HOST', args.host)
-     args.port = get_arg('DB_PORT', args.port)
-     args.user = get_arg('DB_USER', args.user)
-     args.password = get_arg('DB_PASSWORD', args.password)
-     args.dbname = get_arg('DB_DBNAME', args.dbname)
-     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
-     return args
+    """Parsing command line args."""
+    args = parser.parse_args()
+    args.host = get_arg('DB_HOST', args.host)
+    args.port = get_arg('DB_PORT', args.port)
+    args.user = get_arg('DB_USER', args.user)
+    args.password = get_arg('DB_PASSWORD', args.password)
+    args.dbname = get_arg('DB_DBNAME', args.dbname)
+    args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
+    return args
 
 
 def main(arguments):
+    """Begin running the the modeller."""
     loggers = logger.get_logger()
-    # set up the spark context.
+    # set up the spark configuration
 
     loggers.debug("Connecting to Spark")
 
@@ -59,7 +63,7 @@ def main(arguments):
     spark = pyspark.sql.SparkSession.builder.config(conf=conf).getOrCreate()
     sc = spark.sparkContext
 
-    # Set up SQL Context
+    # set up SQL connection
     try:
         con = build_connection(arguments)
     except:
@@ -71,13 +75,13 @@ def main(arguments):
     cursor.execute("SELECT * FROM ratings")
     ratings = cursor.fetchall()
     loggers.info("Fetched data from table")
-    # creates the RDD:
+    # create an RDD of the ratings data
     ratingsRDD = sc.parallelize(ratings)
     ratings_length=cursor.rowcount
 
-    #removing the final column, which contains the time stamps.
+    # remove the final column which contains the time stamps
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
-
+    # split the RDD into 3 sections: training, validation and testing
     estimator = modeller.Estimator(ratingsRDD)
 
     if get_arg('DISABLE_FAST_TRAIN', args.slowtrain) is True:
@@ -91,13 +95,13 @@ def main(arguments):
         loggers.info('Using fast training method')
         parameters = { 'rank': 6, 'lambda': 0.09, 'iteration': 2 }
 
-    # trains the model
+    # train the model
     model = modeller.Trainer(data=ratingsRDD,
                              rank=parameters['rank'],
                              iterations=parameters['iteration'],
                              lambda_=parameters['lambda'],
                              seed=42).train()
-    # writes the model
+    # write the model to model store
     model_version=1
     writer = storage.MongoDBModelWriter(sc=sc, uri=arguments.mongoURI)
     writer.write(model=model, version=1)
@@ -111,7 +115,7 @@ def main(arguments):
     #    (perhaps with a delay)
     # 3. store new model
 
-        #Check to see if new model should be created
+        # check to see if new model should be created
         cursor.execute("SELECT * FROM ratings")
         current_ratings_length = cursor.rowcount
         loggers.info("current ratings length = {}".format(current_ratings_length))
@@ -120,12 +124,13 @@ def main(arguments):
             ratings_length = current_ratings_length
             ratings = cursor.fetchall()
 
-            #create the RDD:
+            # create the RDD
             ratingsRDD = sc.parallelize(ratings)
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 
             model_version += 1
             loggers.info("model version={}".format(model_version))
+            # train the model
             model = modeller.Trainer(data=ratingsRDD,
                                 rank=parameters['rank'],
                                 iterations=parameters['iteration'],
@@ -134,7 +139,7 @@ def main(arguments):
             writer.write(model=model, version=model_version)
 
         else:
-        ##sleep for 2 minutes
+            # sleep for 2 minutes
             loggers.info("sleeping for 120 seconds")
             time.sleep(120)
 
