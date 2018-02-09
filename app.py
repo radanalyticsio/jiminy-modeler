@@ -14,6 +14,7 @@ import modeller
 import storage
 import logger
 
+
 def get_arg(env, default):
     """Extract command line args, else use defaults if none given."""
     return os.getenv(env) if os.getenv(env, '') is not '' else default
@@ -24,7 +25,6 @@ def make_connection(host='127.0.0.1', port=5432, user='postgres',
     return psycopg2.connect(host=host, port=port, user=user,
                             password=password, dbname=dbname)
 
-
 def build_connection(args):
     """Make the db connection with an args object."""
     conn = make_connection(host=args.host,
@@ -33,7 +33,6 @@ def build_connection(args):
                            password=args.password,
                            dbname=args.dbname)
     return conn
-
 
 def parse_args(parser):
     """Parsing command line args."""
@@ -46,19 +45,15 @@ def parse_args(parser):
     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
     return args
 
-
 def main(arguments):
     """Begin running the the modeller."""
     loggers = logger.get_logger()
     # set up the spark configuration
-
     loggers.debug("Connecting to Spark")
-
     conf = (pyspark.SparkConf().setAppName("JiminyModeler")
             .set('spark.executor.memory', '4G')
             .set('spark.driver.memory', '45G')
             .set('spark.driver.maxResultSize', '10G'))
-
     # get the spark context
     spark = pyspark.sql.SparkSession.builder.config(conf=conf).getOrCreate()
     sc = spark.sparkContext
@@ -78,7 +73,6 @@ def main(arguments):
     # create an RDD of the ratings data
     ratingsRDD = sc.parallelize(ratings)
     ratings_length=cursor.rowcount
-
     # remove the final column which contains the time stamps
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
     # split the RDD into 3 sections: training, validation and testing
@@ -123,11 +117,9 @@ def main(arguments):
         if current_ratings_length != ratings_length:
             ratings_length = current_ratings_length
             ratings = cursor.fetchall()
-
             # create the RDD
             ratingsRDD = sc.parallelize(ratings)
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
-
             model_version += 1
             loggers.info("model version={}".format(model_version))
             # train the model
@@ -137,7 +129,6 @@ def main(arguments):
                                 lambda_ = parameters['lambda'],
                                 seed=42).train()
             writer.write(model=model, version=model_version)
-
         else:
             # sleep for 2 minutes
             loggers.info("sleeping for 120 seconds")
