@@ -156,7 +156,7 @@ if __name__ == '__main__':
         help='the user for the postgresql database (default: postgres). '
         'env variable: DB_USER')
     parser.add_argument(
-        '--password', default='password',
+        '--password', default='postgres',
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
     parser.add_argument(
