@@ -14,7 +14,6 @@ import modeller
 import storage
 import logger
 
-
 def get_arg(env, default):
     return os.getenv(env) if os.getenv(env, '') is not '' else default
 
@@ -46,10 +45,10 @@ def parse_args(parser):
 
 
 def main(arguments):
-    logger = logger.get_logger()
+    loggers = logger.get_logger()
     # set up the spark context.
 
-    logger.debug("Connecting to Spark")
+    loggers.debug("Connecting to Spark")
 
     conf = (pyspark.SparkConf().setAppName("JiminyModeler")
             .set('spark.executor.memory', '4G')
@@ -64,14 +63,14 @@ def main(arguments):
     try:
         con = build_connection(arguments)
     except:
-        logger.error("Could not connect to data store")
+        loggers.error("Could not connect to data store")
         sys.exit(1)
 
     # fetch the data from the db
     cursor = con.cursor()
     cursor.execute("SELECT * FROM ratings")
     ratings = cursor.fetchall()
-    logger.info("Fetched data from table")
+    loggers.info("Fetched data from table")
     # creates the RDD:
     ratingsRDD = sc.parallelize(ratings)
     ratings_length=cursor.rowcount
@@ -83,13 +82,13 @@ def main(arguments):
 
     if get_arg('DISABLE_FAST_TRAIN', args.slowtrain) is True:
         # basic parameter selection
-        logger.info('Using slow training method')
+        loggers.info('Using slow training method')
         parameters = estimator.run(ranks=[2, 4, 6, 8],
                                    lambdas=[0.01, 0.05, 0.09, 0.13],
                                    iterations=[2])
     else:
         # override basic parameters for faster testing
-        logger.info('Using fast training method')
+        loggers.info('Using fast training method')
         parameters = { 'rank': 6, 'lambda': 0.09, 'iteration': 2 }
 
     # trains the model
@@ -115,7 +114,7 @@ def main(arguments):
         #Check to see if new model should be created
         cursor.execute("SELECT * FROM ratings")
         current_ratings_length = cursor.rowcount
-        logger.info("current ratings length = {}".format(current_ratings_length))
+        loggers.info("current ratings length = {}".format(current_ratings_length))
 
         if current_ratings_length != ratings_length:
             ratings_length = current_ratings_length
@@ -126,7 +125,7 @@ def main(arguments):
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
 
             model_version += 1
-            logger.info("model version={}".format(model_version))
+            loggers.info("model version={}".format(model_version))
             model = modeller.Trainer(data=ratingsRDD,
                                 rank=parameters['rank'],
                                 iterations=parameters['iteration'],
@@ -136,7 +135,7 @@ def main(arguments):
 
         else:
         ##sleep for 2 minutes
-            logger.info("sleeping for 120 seconds")
+            loggers.info("sleeping for 120 seconds")
             time.sleep(120)
 
 
@@ -157,7 +156,7 @@ if __name__ == '__main__':
         help='the user for the postgresql database (default: postgres). '
         'env variable: DB_USER')
     parser.add_argument(
-        '--password', default='postgres',
+        '--password', default='password',
         help='the password for the postgresql user (default: postgres). '
         'env variable: DB_PASSWORD')
     parser.add_argument(
