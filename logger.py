@@ -1,3 +1,4 @@
+"""Defining logging for the jiminy-modeller."""
 import logging
 
 
