@@ -1,8 +1,12 @@
-import math
-from pyspark.mllib.recommendation import ALS
-from operator import itemgetter
+"""ALS Modeller for Project Jiminy."""
+
 import itertools
+import math
+from operator import itemgetter
 import time
+
+import itertools
+from pyspark.mllib.recommendation import ALS
 import numpy as np
 
 
