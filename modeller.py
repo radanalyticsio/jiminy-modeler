@@ -2,11 +2,11 @@
 
 import itertools
 import math
-from operator import itemgetter
+import operator
 import time
 
 import itertools
-from pyspark.mllib.recommendation import ALS
+import pyspark
 import numpy as np
 
 
@@ -34,7 +34,7 @@ class Estimator:
         return ((int(x[0]), int(x[1])), float(x[2]))
 
     def _train(self, rank, iterations, lambda_, seed):
-        return ALS.train(ratings=self._sets['training'],
+        return pyspark.mllib.recommendation.ALS.train(ratings=self._sets['training'],
                          rank=rank, seed=seed,
                          lambda_=lambda_,
                          iterations=iterations)
@@ -62,9 +62,9 @@ class Estimator:
             combos.append(parameters)
             print combos
         print rmses
-        maximum = min(enumerate(rmses), key=itemgetter(1))[0]
+        maximum = min(enumerate(rmses), key=operator.itemgetter(1))[0]
         print enumerate(rmses)
-        print min(enumerate(rmses), key=itemgetter(1))
+        print min(enumerate(rmses), key=operator.itemgetter(1))
         print maximum
         optimal = combos[maximum]
         return {
@@ -83,7 +83,7 @@ class Trainer:
         self.seed = seed
 
     def train(self):
-        return ALS.train(ratings=self._data,
+        return pyspark.mllib.recommendation.ALS.train(ratings=self._data,
                          rank=self.rank,
                          seed=self.seed,
                          lambda_=self.lambda_,
