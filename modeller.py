@@ -6,8 +6,12 @@ import operator
 import time
 
 import itertools
-import pyspark
+from pyspark.mllib.recommendation import ALS
 import numpy as np
+
+import logger
+
+loggers = logger.get_logger()
 
 
 class Estimator:
@@ -39,7 +43,7 @@ class Estimator:
 
     def _train(self, rank, iterations, lambda_, seed):
         """Train a model, using the given parameters."""
-        return pyspark.mllib.recommendation.ALS.train(ratings=self._sets['training'],
+        return ALS.train(ratings=self._sets['training'],
                          rank=rank, seed=seed,
                          lambda_=lambda_,
                          iterations=iterations)
@@ -53,7 +57,7 @@ class Estimator:
         for parameters in itertools.product(ranks, lambdas, iterations):
             rank, lambda_, iteration = parameters
 
-            print "Evaluating parameters: %s" % str(parameters)
+            loggers.info("Evaluating parameters: %s" % str(parameters))
 
             start_time = time.time()
 
@@ -61,16 +65,11 @@ class Estimator:
 
             elapsed_time = time.time() - start_time
 
-            print "RMSE = %f (took %f seconds)" % (rmse, elapsed_time)
+            loggers.info("RMSE = %f (took %f seconds)" % (rmse, elapsed_time))
 
             rmses.append(rmse)
             combos.append(parameters)
-            print combos
-        print rmses
         maximum = min(enumerate(rmses), key=operator.itemgetter(1))[0]
-        print enumerate(rmses)
-        print min(enumerate(rmses), key=operator.itemgetter(1))
-        print maximum
         optimal = combos[maximum]
         return {
             'rank': optimal[0],
@@ -89,7 +88,7 @@ class Trainer:
         self.seed = seed
 
     def train(self):
-        return pyspark.mllib.recommendation.ALS.train(ratings=self._data,
+        return ALS.train(ratings=self._data,
                          rank=self.rank,
                          seed=self.seed,
                          lambda_=self.lambda_,
