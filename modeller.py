@@ -53,20 +53,13 @@ class Estimator:
         rmses = []
         combos=[]
         sizings = [len(ranks), len(lambdas), len(iterations)]
-
         for parameters in itertools.product(ranks, lambdas, iterations):
             rank, lambda_, iteration = parameters
-
             loggers.info("Evaluating parameters: %s" % str(parameters))
-
             start_time = time.time()
-
             rmse = self.rmse(self._train(rank=rank, iterations=iteration, lambda_=lambda_, seed=42))
-
             elapsed_time = time.time() - start_time
-
             loggers.info("RMSE = %f (took %f seconds)" % (rmse, elapsed_time))
-
             rmses.append(rmse)
             combos.append(parameters)
         maximum = min(enumerate(rmses), key=operator.itemgetter(1))[0]
