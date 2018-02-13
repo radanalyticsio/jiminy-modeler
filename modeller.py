@@ -6,7 +6,7 @@ import operator
 import time
 
 import itertools
-from pyspark.mllib.recommendation import ALS
+import pyspark.mllib.recommendation as rec
 import numpy as np
 
 import logger
@@ -43,7 +43,7 @@ class Estimator:
 
     def _train(self, rank, iterations, lambda_, seed):
         """Train a model, using the given parameters."""
-        return ALS.train(ratings=self._sets['training'],
+        return rec.ALS.train(ratings=self._sets['training'],
                          rank=rank, seed=seed,
                          lambda_=lambda_,
                          iterations=iterations)
@@ -81,7 +81,7 @@ class Trainer:
         self.seed = seed
 
     def train(self):
-        return ALS.train(ratings=self._data,
+        return rec.ALS.train(ratings=self._data,
                          rank=self.rank,
                          seed=self.seed,
                          lambda_=self.lambda_,
