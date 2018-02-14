@@ -5,9 +5,7 @@ import math
 import operator
 import time
 
-import itertools
 import pyspark.mllib.recommendation as rec
-import numpy as np
 
 import logger
 
@@ -20,7 +18,7 @@ class Estimator:
     """
     def __init__(self, data):
         self._data = data
-        #std bootstrap proportions for the training, validation and testing
+        # std bootstrap proportions for the training, validation and testing
         self._sets = self._split([0.6, 0.2, 0.2])
 
     def _split(self, proportions):
@@ -30,9 +28,11 @@ class Estimator:
 
     def rmse(self, model):
         """Compute root mean squared error for the validation set."""
-        predictions = model.predictAll(self._sets['validation'].map(lambda x: (x[0], x[1])))
+        predictions = model.predictAll(
+                      self._sets['validation'].map(lambda x: (x[0], x[1])))
         predictions_rating = predictions.map(Estimator.group_ratings)
-        validation_rating = self._sets['validation'].map(Estimator.group_ratings)
+        validation_rating = self._sets['validation'].map(
+                            Estimator.group_ratings)
         joined = validation_rating.join(predictions_rating)
         return math.sqrt(joined.map(lambda x: (x[1][0] - x[1][1]) ** 2).mean())
 
@@ -44,20 +44,20 @@ class Estimator:
     def _train(self, rank, iterations, lambda_, seed):
         """Train a model, using the given parameters."""
         return rec.ALS.train(ratings=self._sets['training'],
-                         rank=rank, seed=seed,
-                         lambda_=lambda_,
-                         iterations=iterations)
+                             rank=rank, seed=seed,
+                             lambda_=lambda_,
+                             iterations=iterations)
 
     def run(self, ranks, lambdas, iterations):
         """Return optimal parameters from given input sets."""
         rmses = []
-        combos=[]
-        sizings = [len(ranks), len(lambdas), len(iterations)]
+        combos = []
         for parameters in itertools.product(ranks, lambdas, iterations):
             rank, lambda_, iteration = parameters
             loggers.info("Evaluating parameters: %s" % str(parameters))
             start_time = time.time()
-            rmse = self.rmse(self._train(rank=rank, iterations=iteration, lambda_=lambda_, seed=42))
+            rmse = self.rmse(self._train(rank=rank, iterations=iteration,
+                                         lambda_=lambda_, seed=42))
             elapsed_time = time.time() - start_time
             loggers.info("RMSE = %f (took %f seconds)" % (rmse, elapsed_time))
             rmses.append(rmse)
@@ -82,7 +82,7 @@ class Trainer:
 
     def train(self):
         return rec.ALS.train(ratings=self._data,
-                         rank=self.rank,
-                         seed=self.seed,
-                         lambda_=self.lambda_,
-                         iterations=self.iterations)
+                             rank=self.rank,
+                             seed=self.seed,
+                             lambda_=self.lambda_,
+                             iterations=self.iterations)
