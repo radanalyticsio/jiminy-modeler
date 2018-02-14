@@ -99,10 +99,12 @@ def main(arguments):
                              iterations=parameters['iteration'],
                              lambda_=parameters['lambda'],
                              seed=42).train()
+    loggers.info('Model has been trained')
     # write the model to model store
     model_version = 1
     writer = storage.MongoDBModelWriter(sc=sc, uri=arguments.mongoURI)
     writer.write(model=model, version=1)
+    loggers.info('Model version 1 written to model store')
 
     while True:
         # this loop should be at the heart of this application, it will
@@ -126,14 +128,17 @@ def main(arguments):
             ratingsRDD = sc.parallelize(ratings)
             ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
             model_version += 1
-            loggers.info("model version={}".format(model_version))
+            loggers.info("Training model, version={}".format(model_version))
             # train the model
             model = modeller.Trainer(data=ratingsRDD,
                                      rank=parameters['rank'],
                                      iterations=parameters['iteration'],
                                      lambda_=parameters['lambda'],
                                      seed=42).train()
+            loggers.info("Model has been trained.")
             writer.write(model=model, version=model_version)
+            loggers.info(
+                "Model version %f written to model store." % (model_version))
         else:
             # sleep for 2 minutes
             loggers.info("sleeping for 120 seconds")
