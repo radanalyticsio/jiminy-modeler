@@ -19,11 +19,13 @@ def get_arg(env, default):
     """Extract command line args, else use defaults if none given."""
     return os.getenv(env) if os.getenv(env, '') is not '' else default
 
+
 def make_connection(host='127.0.0.1', port=5432, user='postgres',
                     password='postgres', dbname='postgres'):
     """Connect to a postgresql db."""
     return psycopg2.connect(host=host, port=port, user=user,
                             password=password, dbname=dbname)
+
 
 def build_connection(args):
     """Make the db connection with an args object."""
@@ -33,6 +35,7 @@ def build_connection(args):
                            password=args.password,
                            dbname=args.dbname)
     return conn
+
 
 def parse_args(parser):
     """Parsing command line args."""
@@ -44,6 +47,7 @@ def parse_args(parser):
     args.dbname = get_arg('DB_DBNAME', args.dbname)
     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
     return args
+
 
 def main(arguments):
     """Begin running the the modeller."""
@@ -61,7 +65,7 @@ def main(arguments):
     # set up SQL connection
     try:
         con = build_connection(arguments)
-    except:
+    except IOError:
         loggers.error("Could not connect to data store")
         sys.exit(1)
 
@@ -72,7 +76,7 @@ def main(arguments):
     loggers.info("Fetched data from table")
     # create an RDD of the ratings data
     ratingsRDD = sc.parallelize(ratings)
-    ratings_length=cursor.rowcount
+    ratings_length = cursor.rowcount
     # remove the final column which contains the time stamps
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
     # split the RDD into 3 sections: training, validation and testing
@@ -87,7 +91,7 @@ def main(arguments):
     else:
         # override basic parameters for faster testing
         loggers.info('Using fast training method')
-        parameters = { 'rank': 6, 'lambda': 0.09, 'iteration': 2 }
+        parameters = {'rank': 6, 'lambda': 0.09, 'iteration': 2}
 
     # train the model
     model = modeller.Trainer(data=ratingsRDD,
@@ -96,23 +100,24 @@ def main(arguments):
                              lambda_=parameters['lambda'],
                              seed=42).train()
     # write the model to model store
-    model_version=1
+    model_version = 1
     writer = storage.MongoDBModelWriter(sc=sc, uri=arguments.mongoURI)
     writer.write(model=model, version=1)
 
     while True:
-    # this loop should be at the heart of this application, it will
-    # continually loop until killed by the orchestration engine.
-    # in this loop it should generally do the following:
-    # 1. check to see if it should create a new model
-    # 2. if yes, create a new model. if no, continue looping
-    #    (perhaps with a delay)
-    # 3. store new model
+        # this loop should be at the heart of this application, it will
+        # continually loop until killed by the orchestration engine.
+        # in this loop it should generally do the following:
+        # 1. check to see if it should create a new model
+        # 2. if yes, create a new model. if no, continue looping
+        #    (perhaps with a delay)
+        # 3. store new model
 
         # check to see if new model should be created
         cursor.execute("SELECT * FROM ratings")
         current_ratings_length = cursor.rowcount
-        loggers.info("current ratings length = {}".format(current_ratings_length))
+        loggers.info(
+            "current ratings length = {}".format(current_ratings_length))
 
         if current_ratings_length != ratings_length:
             ratings_length = current_ratings_length
@@ -124,10 +129,10 @@ def main(arguments):
             loggers.info("model version={}".format(model_version))
             # train the model
             model = modeller.Trainer(data=ratingsRDD,
-                                rank=parameters['rank'],
-                                iterations=parameters['iteration'],
-                                lambda_ = parameters['lambda'],
-                                seed=42).train()
+                                     rank=parameters['rank'],
+                                     iterations=parameters['iteration'],
+                                     lambda_=parameters['lambda'],
+                                     seed=42).train()
             writer.write(model=model, version=model_version)
         else:
             # sleep for 2 minutes
@@ -136,7 +141,8 @@ def main(arguments):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description = 'load data from postgresql db')
+    parser = argparse.ArgumentParser(
+        description='load data from postgresql db')
     parser.add_argument(
         '--host', default='127.0.0.1',
         help='the postgresql host address (default:127.0.0.1).'
@@ -163,5 +169,5 @@ if __name__ == '__main__':
         '--disable-fast-train', dest='slowtrain', action='store_true',
         help='disable the faster training method, warning this may slow '
         'down quite a bit for the first run.')
-    args=parse_args(parser)
+    args = parse_args(parser)
     main(arguments=args)
