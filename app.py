@@ -76,7 +76,8 @@ def main(arguments):
     loggers.info("Fetched data from table")
     # create an RDD of the ratings data
     ratingsRDD = sc.parallelize(ratings)
-    ratings_length = cursor.rowcount
+    # getting the largest timestamp. We use this to determine new entries later
+    max_timestamp = ratingsRDD.map(lambda x: x[3]).max()
     # remove the final column which contains the time stamps
     ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
     # split the RDD into 3 sections: training, validation and testing
@@ -116,17 +117,25 @@ def main(arguments):
         # 3. store new model
 
         # check to see if new model should be created
-        cursor.execute("SELECT * FROM ratings")
-        current_ratings_length = cursor.rowcount
+        # select the maximum time stamp from the ratings database
+        cursor.execute("""
+            SELECT timestamp FROM ratings ORDER BY timestamp DESC LIMIT 1;
+            """)
+        checking_max_timestamp = cursor.fetchone()[0]
         loggers.info(
-            "current ratings length = {}".format(current_ratings_length))
+            "The latest timestamp = {}". format(checking_max_timestamp))
 
-        if current_ratings_length != ratings_length:
-            ratings_length = current_ratings_length
-            ratings = cursor.fetchall()
-            # create the RDD
-            ratingsRDD = sc.parallelize(ratings)
-            ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+        if checking_max_timestamp > max_timestamp:
+            # build a new model
+            # first, fetch all new ratings
+            cursor.execute("""
+                SELECT * FROM ratings WHERE (timestamp > %s);
+                """, (max_timestamp,))
+            new_ratings = cursor.fetchall()
+            max_timestamp = checking_max_timestamp
+            new_ratingsRDD = sc.parallelize(new_ratings)
+            new_ratingsRDD = new_ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+            ratings = ratingsRDD.union(new_ratingsRDD)
             model_version += 1
             loggers.info("Training model, version={}".format(model_version))
             # train the model
