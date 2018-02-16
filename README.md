@@ -29,4 +29,20 @@ oc new-app --template oshinko-pyspark-build-dc \
   -p APPLICATION_NAME=modeler
 ```
 
-In the command above, we assume that the postgreSQL database has associated username, database name and password `postgres`. These command line arguments can be amended appropriately to connect to the correct postgreSQL table. 
+In the command above, we assume that the postgreSQL database has associated username, database name and password `postgres`. These command line arguments can be amended appropriately to connect to the correct postgreSQL table, where the ratings are held.
+
+The commands given above will launch the modeler. To watch the modeler, run
+
+```bash
+oc logs -f dc/Modeler
+```
+
+## Training the model
+
+The command given above to launch the model will use a *fast* training method, meaning that parameters for the model are pre selected. However, if you wish to complete a more robust training of the model, which optimises for model parameters, the following command line argument should be included in the model launch command:
+
+```bash
+   -e DISABLE_FAST_TRAIN = disable-fast-train
+```
+
+Note that this command will result in the model taking over half an hour to train, for the 20m Movie Lens dataset. 
