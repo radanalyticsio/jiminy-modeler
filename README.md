@@ -45,4 +45,4 @@ The command given above to launch the model will use a *fast* training method, m
    -e DISABLE_FAST_TRAIN = disable-fast-train
 ```
 
-Note that this command will result in the model taking over half an hour to train, for the 20m Movie Lens dataset. 
+Note that this command will result in the model taking over half an hour to train on the latest [MovieLens Dataset](https://grouplens.org/datasets/movielens/latest/).
