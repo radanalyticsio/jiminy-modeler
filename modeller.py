@@ -19,7 +19,7 @@ class Estimator:
     def __init__(self, data):
         self._data = data
         # std bootstrap proportions for the training, validation and testing
-        self._sets = self._split([0.6, 0.2, 0.2])
+        self._sets = self._split([0.6, 0.3, 0.1])
 
     def _split(self, proportions):
         """Split data into three random chunks."""
