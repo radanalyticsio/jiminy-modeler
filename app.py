@@ -118,9 +118,9 @@ def main(arguments):
 
         # check to see if new model should be created
         # select the maximum time stamp from the ratings database
-        cursor.execute("""
-            SELECT timestamp FROM ratings ORDER BY timestamp DESC LIMIT 1;
-            """)
+        cursor.execute(
+            "SELECT timestamp FROM ratings ORDER BY timestamp DESC LIMIT 1;"
+            )
         checking_max_timestamp = cursor.fetchone()[0]
         loggers.info(
             "The latest timestamp = {}". format(checking_max_timestamp))
@@ -128,9 +128,9 @@ def main(arguments):
         if checking_max_timestamp > max_timestamp:
             # build a new model
             # first, fetch all new ratings
-            cursor.execute("""
-                SELECT * FROM ratings WHERE (timestamp > %s);
-                """, (max_timestamp,))
+            cursor.execute(
+                "SELECT * FROM ratings WHERE (timestamp > %s);",
+                (max_timestamp,))
             new_ratings = cursor.fetchall()
             max_timestamp = checking_max_timestamp
             new_ratingsRDD = sc.parallelize(new_ratings)
