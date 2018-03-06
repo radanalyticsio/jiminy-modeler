@@ -18,7 +18,7 @@ oc create -f https://radanalytics.io/resources.yaml
 The modeler can then be launched using the following command:
 
 ```bash
-oc new-app --template oshinko-pyspark-build-dc \
+oc new-app --template oshinko-python-build-dc \
   -p GIT_URI=https://github.com/radanalyticsio/jiminy-modeler \
   -e MONGO_URI=mongodb://mongo:mongo@mongodb/models \
   -e DB_HOST=postgresql \
