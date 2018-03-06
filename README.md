@@ -34,7 +34,7 @@ In the command above, we assume that the postgreSQL database has associated user
 The commands given above will launch the modeler. To watch the modeler, run
 
 ```bash
-oc logs -f dc/Modeler
+oc logs -f s/Modeler/modeler/
 ```
 
 ## Training the model
