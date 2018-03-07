@@ -50,6 +50,16 @@ def parse_args(parser):
     return args
 
 
+def check_positive_integer(string):
+    """Checking that values are poitive integers."""
+    fval = float(string)
+    ival = int(fval)
+    if ival != fval or ival <= 0:
+        msg = "%r is not a positive integer" % string
+        raise argparse.ArgumentTypeError(msg)
+    return ival
+
+
 def main(arguments):
     """Begin running the the modeller."""
     loggers = logger.get_logger()
@@ -185,7 +195,7 @@ if __name__ == '__main__':
         help='disable the faster training method, warning this may slow '
         'down quite a bit for the first run.')
     parser.add_argument(
-        '--rankval', default=6, type=int, help='fixing the rank parameter of ALS '
+        '--rankval', default=6, type=check_positive_integer, help='fixing the rank parameter of ALS '
         '(default = 6). env variable:RANK_VAL')
     args = parse_args(parser)
     main(arguments=args)
