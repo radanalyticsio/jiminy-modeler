@@ -47,6 +47,7 @@ def parse_args(parser):
     args.dbname = get_arg('DB_DBNAME', args.dbname)
     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
     args.rankval = get_arg('RANK_VAL', args.rankval)
+    args.itsval = get_arg('ITS_VAL', args.itsval)
     return args
 
 
@@ -103,7 +104,7 @@ def main(arguments):
     else:
         # override basic parameters for faster testing
         loggers.info('Using fast training method')
-        parameters = {'rank': arguments.rankval, 'lambda': 0.09, 'iteration': 2}
+        parameters = {'rank': arguments.rankval, 'lambda': 0.09, 'iteration': arguments.itsval}
 
     # train the model
     model = modeller.Trainer(data=ratingsRDD,
@@ -197,5 +198,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '--rankval', default=6, type=check_positive_integer, help='fixing the rank parameter of ALS '
         '(default = 6). env variable:RANK_VAL')
+    parser.add_argument(
+        '--itsval', default=2, type=int, choices=xrange(1,11), help='fix ALS iterations parameter '
+        '(default = 2). env variable:ITS_VAL')
     args = parse_args(parser)
     main(arguments=args)
