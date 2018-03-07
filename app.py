@@ -61,6 +61,14 @@ def check_positive_integer(string):
     return ival
 
 
+def check_iterations_value(string):
+    """Checking that the value is a positive integer. Warn if too large."""
+    pval = check_positive_integer(string)
+    if pval > 10:
+        print "Large number of iterations can cause a slow model build"
+    return pval
+
+
 def main(arguments):
     """Begin running the the modeller."""
     loggers = logger.get_logger()
@@ -199,7 +207,7 @@ if __name__ == '__main__':
         '--rankval', default=6, type=check_positive_integer, help='fixing the rank parameter of ALS '
         '(default = 6). env variable:RANK_VAL')
     parser.add_argument(
-        '--itsval', default=2, type=int, choices=xrange(1,11), help='fix ALS iterations parameter '
+        '--itsval', default=2, type=check_iterations_value, help='fix ALS iterations parameter '
         '(default = 2). env variable:ITS_VAL')
     args = parse_args(parser)
     main(arguments=args)
