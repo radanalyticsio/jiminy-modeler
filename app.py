@@ -69,6 +69,15 @@ def check_iterations_value(string):
         print "Large number of iterations can cause a slow model build"
     return pval
 
+def check_lambda_value(string):
+    """Check that lambda is positive. Warn if too large."""
+    fval = float(string)
+    if fval <= 0:
+        msg = "%r is not positive" % string
+        raise argparse.ArgumentTypeError(msg)
+    if fval > 1:
+        print "Optimal lambda is commonly between 0 and 1"
+    return fval
 
 def main(arguments):
     """Begin running the the modeller."""
@@ -211,7 +220,7 @@ if __name__ == '__main__':
         '--itsval', default=2, type=check_iterations_value, help='fix ALS iterations parameter '
         '(default = 2). env variable:ITS_VAL')
     parser.add_argument(
-        '--lambdaval', default=0.01, type=float, help='fix ALS lambda parameter (default: 0.01). '
+        '--lambdaval', default=0.01, type=check_lambda_value, help='fix ALS lambda parameter (default: 0.01). '
         'env variable:LAMBDA_VAL')
     args = parse_args(parser)
     main(arguments=args)
