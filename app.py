@@ -69,6 +69,7 @@ def check_iterations_value(string):
         print "Large number of iterations can cause a slow model build"
     return pval
 
+
 def check_lambda_value(string):
     """Check that lambda is positive. Warn if too large."""
     fval = float(string)
@@ -78,6 +79,7 @@ def check_lambda_value(string):
     if fval > 1:
         print "Optimal lambda is commonly between 0 and 1"
     return fval
+
 
 def main(arguments):
     """Begin running the the modeller."""
@@ -122,7 +124,9 @@ def main(arguments):
     else:
         # override basic parameters for faster testing
         loggers.info('Using fast training method')
-        parameters = {'rank': arguments.rankval, 'lambda': arguments.lambdaval, 'iteration': arguments.itsval}
+        parameters = {'rank': arguments.rankval,
+                      'lambda': arguments.lambdaval,
+                      'iteration': arguments.itsval}
 
     # train the model
     model = modeller.Trainer(data=ratingsRDD,
@@ -214,13 +218,13 @@ if __name__ == '__main__':
         help='disable the faster training method, warning this may slow '
         'down quite a bit for the first run.')
     parser.add_argument(
-        '--rankval', default=6, type=check_positive_integer, help='fixing the rank parameter of ALS '
-        '(default = 6). env variable:RANK_VAL')
+        '--rankval', default=6, type=check_positive_integer, help='fixing '
+        'the rank parameter of ALS. (default = 6). env variable:RANK_VAL')
     parser.add_argument(
-        '--itsval', default=2, type=check_iterations_value, help='fix ALS iterations parameter '
-        '(default = 2). env variable:ITS_VAL')
+        '--itsval', default=2, type=check_iterations_value, help='fix ALS '
+        'iterations parameter (default = 2). env variable:ITS_VAL')
     parser.add_argument(
-        '--lambdaval', default=0.01, type=check_lambda_value, help='fix ALS lambda parameter (default: 0.01). '
-        'env variable:LAMBDA_VAL')
+        '--lambdaval', default=0.01, type=check_lambda_value, help='fix ALS '
+        'lambda parameter (default: 0.01). env variable:LAMBDA_VAL')
     args = parse_args(parser)
     main(arguments=args)
