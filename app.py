@@ -66,7 +66,7 @@ def check_iterations_value(string):
     """Checking that the value is a positive integer. Warn if too large."""
     pval = check_positive_integer(string)
     if pval > 10:
-        print "Large number of iterations can cause a slow model build"
+        logger.get_logger().warning("Large iterations causes slow model build")
     return pval
 
 
@@ -77,7 +77,7 @@ def check_lambda_value(string):
         msg = "%r is not positive" % string
         raise argparse.ArgumentTypeError(msg)
     if fval > 1:
-        print "Optimal lambda is commonly between 0 and 1"
+        logger.get_logger().warning("Optimal lambda is commonly in (0,1)")
     return fval
 
 
