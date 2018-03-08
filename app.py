@@ -116,7 +116,7 @@ def main(arguments):
     estimator = modeller.Estimator(ratingsRDD)
 
     if get_arg('DISABLE_FAST_TRAIN', args.slowtrain) is True:
-        loggers.warn("Any ALS parameters given on the command line will not" \
+        loggers.warn("Any ALS parameters given on the command line will not"
                      " be used in when fast train is disabled.")
         # basic parameter selection
         loggers.info('Using slow training method')
