@@ -31,7 +31,7 @@ oc new-app --template oshinko-python-build-dc \
 
 In the command above, we assume that the postgreSQL database has associated username, database name and password `postgres`. These command line arguments can be amended appropriately to connect to the correct postgreSQL table, where the ratings are held.
 
-The commands given above will launch the modeler. To watch the modeler, run
+The commands given above will launch the modeler. To watch the modeler, run:
 
 ```bash
 oc logs -f s/Modeler/modeler/
@@ -39,7 +39,7 @@ oc logs -f s/Modeler/modeler/
 
 ## Training the model
 
-The command given above to launch the model will use a *fast* training method, meaning that parameters for the model are pre selected. The default values are given by `rank = 6`, `lambda = 0.09` and `iteration = 2`. You can run the modeler with different parameter values by using the corresponding command line arguments. For example, if you wish to run at `rank = 3`, `lambda = 0.1` and `iteration = 4` the following command line arguments should be included in the model launch command:
+The command to launch the modeller, which is given above, will use a *fast* training method, meaning that parameters for the model are preselected. The default values are given by `rank = 6`, `lambda = 0.09` and `iteration = 2`. You can run the modeler with different parameter values using command line arguments. For example, if you wish to run at `rank = 3`, `lambda = 0.1` and `iteration = 4` the following command line arguments should be included in the model launch command:
 
 ```bash
   -e RANK_VAL = 3
@@ -55,4 +55,4 @@ However, if you wish to complete a more robust training of the model, which opti
 
 Note that this command will result in the model taking over half an hour to train on the latest [MovieLens Dataset](https://grouplens.org/datasets/movielens/latest/).
 
-If fast train is disabled *and* command line parameter values are given the command line parameter values will be ignored, and the slow train method will be used. 
+If fast train is disabled *and* command line parameter values are given, the command line parameter values will be ignored and the slow train method will be used. 
