@@ -39,10 +39,20 @@ oc logs -f s/Modeler/modeler/
 
 ## Training the model
 
-The command given above to launch the model will use a *fast* training method, meaning that parameters for the model are pre selected. However, if you wish to complete a more robust training of the model, which optimises for model parameters, the following command line argument should be included in the model launch command:
+The command given above to launch the model will use a *fast* training method, meaning that parameters for the model are pre selected. The default values are given by `rank = 6`, `lambda = 0.09` and `iteration = 2`. You can run the modeler with different parameter values by using the corresponding command line arguments. For example, if you wish to run at `rank = 3`, `lambda = 0.1` and `iteration = 4` the following command line arguments should be included in the model launch command:
+
+```bash
+  -e RANK_VAL = 3
+  -e LAMBDA_VAL = 0.1
+  -e ITS_VAL = 4
+```
+
+However, if you wish to complete a more robust training of the model, which optimises for model parameters, the following command line argument should be included in the model launch command:
 
 ```bash
    -e DISABLE_FAST_TRAIN = disable-fast-train
 ```
 
 Note that this command will result in the model taking over half an hour to train on the latest [MovieLens Dataset](https://grouplens.org/datasets/movielens/latest/).
+
+If fast train is disabled *and* command line parameter values are given the command line parameter values will be ignored, and the slow train method will be used. 
