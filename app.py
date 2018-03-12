@@ -77,7 +77,7 @@ def main(arguments):
     # create an RDD of the ratings data
     ratingsRDD = sc.parallelize(ratings)
     # getting the largest timestamp. We use this to determine new entries later
-    max_timestamp = ratingsRDD.map(lambda x: x[3]).max()
+    max_timestamp = ratingsRDD.map(lambda x: x[4]).max()
     # remove the final column which contains the time stamps
     ratingsRDD = ratingsRDD.map(lambda x: (x[1], x[2], x[3]))
     # split the RDD into 3 sections: training, validation and testing
