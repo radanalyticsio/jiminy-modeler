@@ -79,7 +79,7 @@ def main(arguments):
     # getting the largest timestamp. We use this to determine new entries later
     max_timestamp = ratingsRDD.map(lambda x: x[3]).max()
     # remove the final column which contains the time stamps
-    ratingsRDD = ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+    ratingsRDD = ratingsRDD.map(lambda x: (x[1], x[2], x[3]))
     # split the RDD into 3 sections: training, validation and testing
     estimator = modeller.Estimator(ratingsRDD)
 
@@ -134,7 +134,7 @@ def main(arguments):
             new_ratings = cursor.fetchall()
             max_timestamp = checking_max_timestamp
             new_ratingsRDD = sc.parallelize(new_ratings)
-            new_ratingsRDD = new_ratingsRDD.map(lambda x: (x[0], x[1], x[2]))
+            new_ratingsRDD = new_ratingsRDD.map(lambda x: (x[1], x[2], x[3]))
             ratings = ratingsRDD.union(new_ratingsRDD)
             model_version += 1
             loggers.info("Training model, version={}".format(model_version))
