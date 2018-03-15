@@ -46,9 +46,9 @@ def parse_args(parser):
     args.password = get_arg('DB_PASSWORD', args.password)
     args.dbname = get_arg('DB_DBNAME', args.dbname)
     args.mongoURI = get_arg('MONGO_URI', args.mongoURI)
-    args.rankval = get_arg('RANK_VAL', args.rankval)
-    args.itsval = get_arg('ITS_VAL', args.itsval)
-    args.lambdaval = get_arg('LAMBDA_VAL', args.lambdaval)
+    args.rankval = check_positive_integer(get_arg('RANK_VAL', args.rankval))
+    args.itsval = check_iterations_value(get_arg('ITS_VAL', args.itsval))
+    args.lambdaval = check_lambda_value(get_arg('LAMBDA_VAL', args.lambdaval))
     return args
 
 
