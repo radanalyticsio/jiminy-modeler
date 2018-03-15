@@ -1,6 +1,6 @@
 # Jiminy Modeler
 
-This is the model service for the Jiminy project.
+This is the model service for the [Jiminy project](https://radanalytics.io/applications/project-jiminy).
 
 ## Setup
 
