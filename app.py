@@ -171,7 +171,7 @@ def main(arguments):
             max_timestamp = checking_max_timestamp
             new_ratingsRDD = sc.parallelize(new_ratings)
             new_ratingsRDD = new_ratingsRDD.map(lambda x: (x[1], x[2], x[3]))
-            ratings = ratingsRDD.union(new_ratingsRDD)
+            ratingsRDD = ratingsRDD.union(new_ratingsRDD)
             model_version += 1
             loggers.info("Training model, version={}".format(model_version))
             # train the model
